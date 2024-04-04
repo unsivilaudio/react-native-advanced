@@ -22,26 +22,25 @@ export default function App() {
 
     function renderCard(item: ICard) {
         return (
-            <Card key={item.id}>
-                <Card.Image>
-                    <Image
-                        source={{ uri: item.uri }}
-                        style={{
-                            height: '100%',
-                            width: '100%',
-                            objectFit: 'cover',
-                        }}
-                    />
-                </Card.Image>
-                <Card.Title>{item.text}</Card.Title>
-                <Text style={{ marginBottom: 10 }}>
-                    I can customize the Card further.
-                </Text>
-                <Button
-                    icon={{ name: 'code' }}
-                    color='#03a9f4'
-                    title='View Now!'
+            <Card
+                key={item.id}
+                containerStyle={{ padding: 0, paddingBottom: 14 }}
+            >
+                <Card.Image
+                    source={{ uri: item.uri }}
+                    style={{ height: 300 }}
                 />
+                <View style={{ paddingHorizontal: 14 }}>
+                    <Card.Title>{item.text}</Card.Title>
+                    <Text style={{ marginBottom: 10 }}>
+                        I can customize the Card further.
+                    </Text>
+                    <Button
+                        icon={{ name: 'code', color: 'white' }}
+                        color='#03a9f4'
+                        title='View Now!'
+                    />
+                </View>
             </Card>
         );
     }

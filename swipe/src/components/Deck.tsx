@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { useRef } from 'react';
+import { View, Text, StyleSheet, Animated, PanResponder } from 'react-native';
 
 type DeckProps = {
     data: unknown[];
@@ -9,11 +10,29 @@ type DeckProps = {
 };
 
 export default function Deck({ data, renderCard }: DeckProps) {
+    const positionRef = useRef(new Animated.ValueXY());
+    const panRef = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: (event, gesture) => {
+                positionRef.current.setValue({ x: gesture.dx, y: gesture.dy });
+            },
+            onPanResponderRelease: () => {},
+        })
+    );
+
     function renderCards() {
         return data.map(item => renderCard(item));
     }
 
-    return <View>{renderCards()}</View>;
+    return (
+        <Animated.View
+            style={positionRef.current.getLayout()}
+            {...panRef.current.panHandlers}
+        >
+            {renderCards()}
+        </Animated.View>
+    );
 }
 
 const styles = StyleSheet.create({});
