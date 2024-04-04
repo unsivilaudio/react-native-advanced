@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
     View,
     Dimensions,
     StyleSheet,
     Animated,
     PanResponder,
+    LayoutAnimation,
+    UIManager,
 } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -16,16 +18,17 @@ type DeckItem = { id: string | number };
 type DeckProps<T extends DeckItem> = {
     data: T[];
     renderCard(card: T): JSX.Element;
-    renderNoMoreCards?(): JSX.Element;
-    onSwipeLeft(item: T): void;
-    onSwipeRight(item: T): void;
+    renderNoMoreCards?(onReset: () => void): JSX.Element;
+    onSwipeLeft?(item: T): void;
+    onSwipeRight?(item: T): void;
 };
 
 export default function Deck<T extends DeckItem>({
     data,
     renderCard,
-    onSwipeLeft,
-    onSwipeRight,
+    onSwipeLeft = () => {},
+    onSwipeRight = () => {},
+    renderNoMoreCards = () => <></>,
 }: DeckProps<T>) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const positionRef = useRef(new Animated.ValueXY());
@@ -47,6 +50,12 @@ export default function Deck<T extends DeckItem>({
         })
     );
 
+    useEffect(() => {
+        UIManager.setLayoutAnimationEnabledExperimental &&
+            UIManager.setLayoutAnimationEnabledExperimental(true);
+        LayoutAnimation.spring();
+    }, []);
+
     function forceSwipe(direction: 'right' | 'left') {
         const x =
             direction === 'right' ? SCREEN_WIDTH + 50 : -SCREEN_WIDTH - 50;
@@ -60,6 +69,8 @@ export default function Deck<T extends DeckItem>({
     function onSwipeComplete(direction: 'right' | 'left') {
         const item = data[currentIdx];
         direction === 'right' ? onSwipeRight(item) : onSwipeLeft(item);
+        positionRef.current.setValue({ x: 0, y: 0 });
+        setCurrentIdx(ps => ps + 1);
     }
 
     function resetPosition() {
@@ -83,23 +94,50 @@ export default function Deck<T extends DeckItem>({
     }
 
     function renderCards() {
-        return data.map((item, index) => {
-            if (index === 0) {
+        if (currentIdx >= data.length) {
+            return renderNoMoreCards(() => {
+                setCurrentIdx(0);
+            });
+        }
+
+        return data
+            .map((item, dataIdx) => {
+                if (dataIdx < currentIdx) return null;
+                if (dataIdx === currentIdx) {
+                    return (
+                        <Animated.View
+                            key={item.id as string}
+                            style={[getCardStyle(), styles.itemStyle]}
+                            {...panRef.current.panHandlers}
+                        >
+                            {renderCard(item)}
+                        </Animated.View>
+                    );
+                }
                 return (
                     <Animated.View
-                        key={item.id as string}
-                        style={getCardStyle()}
-                        {...panRef.current.panHandlers}
+                        key={item.id}
+                        style={[
+                            styles.itemStyle,
+                            { top: 10 * (dataIdx - currentIdx) },
+                        ]}
                     >
                         {renderCard(item)}
                     </Animated.View>
                 );
-            }
-            return renderCard(item);
-        });
+            })
+            .reverse();
     }
 
-    return <View>{renderCards()}</View>;
+    return <View style={styles.container}>{renderCards()}</View>;
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    itemStyle: {
+        position: 'absolute',
+        width: '100%',
+    },
+});

@@ -80,7 +80,7 @@ export function generateUsers(): Promise<Card[]> {
             return data.results.map((user, idx) => {
                 return {
                     id: idx,
-                    text: `Card ${idx + 1}`,
+                    text: `Card #${idx + 1}`,
                     uri: user.picture.large,
                 };
             });

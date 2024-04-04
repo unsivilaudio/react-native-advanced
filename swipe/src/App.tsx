@@ -1,8 +1,15 @@
 import { useState, useLayoutEffect } from 'react';
 import { registerRootComponent } from 'expo';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { Card, Button, Image } from '@rneui/base';
+import {
+    StyleSheet,
+    Text,
+    View,
+    SafeAreaView,
+    StatusBar as RNStatusBar,
+    Platform,
+} from 'react-native';
+import { Card, Button } from '@rneui/base';
 
 import type { Card as ICard } from '@/models/Card';
 
@@ -24,14 +31,14 @@ export default function App() {
         return (
             <Card
                 key={item.id}
-                containerStyle={{ padding: 0, paddingBottom: 14 }}
+                containerStyle={[styles.cardContainer, styles.renderCard]}
             >
                 <Card.Image
                     source={{ uri: item.uri }}
                     style={{ height: 300 }}
                 />
                 <View style={{ paddingHorizontal: 14 }}>
-                    <Card.Title>{item.text}</Card.Title>
+                    <Card.Title h3>{item.text}</Card.Title>
                     <Text style={{ marginBottom: 10 }}>
                         I can customize the Card further.
                     </Text>
@@ -45,17 +52,43 @@ export default function App() {
         );
     }
 
+    function renderNoMoreCards(onReset: () => void) {
+        return (
+            <View style={styles.renderNoCard}>
+                <Card.Title style={{ color: 'white' }} h1>
+                    All Done!
+                </Card.Title>
+                <Text
+                    style={{
+                        marginBottom: 10,
+                        fontStyle: 'italic',
+                        color: 'white',
+                    }}
+                >
+                    There's no more content here!
+                </Text>
+                <Button
+                    color='#03a9f4'
+                    title='Get more!'
+                    titleStyle={{ paddingHorizontal: 10 }}
+                    onPress={onReset}
+                />
+            </View>
+        );
+    }
+
     return (
         <>
-            <StatusBar />
-            <View style={styles.container}>
+            <StatusBar style='light' />
+            <SafeAreaView style={styles.container}>
                 <Deck
                     data={data}
                     renderCard={renderCard}
                     onSwipeLeft={() => console.log('swiped left')}
                     onSwipeRight={() => console.log('swiped right!')}
+                    renderNoMoreCards={renderNoMoreCards}
                 />
-            </View>
+            </SafeAreaView>
         </>
     );
 }
@@ -63,6 +96,21 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#43475b',
+        paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
+        paddingBottom: Platform.OS === 'android' ? 25 : 0,
+    },
+    cardContainer: {
+        borderRadius: 6,
+        overflow: 'hidden',
+    },
+    renderCard: {
+        padding: 0,
+        paddingBottom: 14,
+    },
+    renderNoCard: {
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
