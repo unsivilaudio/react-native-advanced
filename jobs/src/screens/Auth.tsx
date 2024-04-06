@@ -1,22 +1,55 @@
-import { Button, View, Text, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { RootTabParamsList } from '@/types/root-tab-params-list';
 
+import { useAuthStore } from '@/store/hooks/use-auth';
+import LoginForm from '@/components/auth/LoginForm';
+import SignupForm from '@/components/auth/SignupForm';
+
 type AuthScreenProps = BottomTabScreenProps<RootTabParamsList, 'Auth'>;
 
 export default function AuthScreen({ navigation }: AuthScreenProps) {
+    const { signupUser, loginUser, loading, error, user } = useAuthStore();
+    const [isLogin, setIsLogin] = useState(true);
+
+    useEffect(() => {
+        if (user && !isLogin) {
+            navigation.navigate('Welcome');
+        } else if (user) {
+            navigation.navigate('Main', { screen: 'Map' });
+        }
+    }, [isLogin, user]);
+
+    function handleSwitchAuth() {
+        setIsLogin(ps => !ps);
+    }
+
+    async function handleAuthSubmit(email: string, password: string) {
+        if (isLogin) {
+            loginUser({ email, password });
+            return;
+        }
+
+        signupUser({ email, password });
+    }
+
     return (
         <View style={styles.container}>
-            <Text>The Auth screen</Text>
-            <View style={styles.button}>
-                <Button
-                    title='Next'
-                    onPress={() =>
-                        navigation.navigate('Main', { screen: 'Map' })
-                    }
+            {isLogin ? (
+                <LoginForm
+                    onSubmit={handleAuthSubmit}
+                    onSwitchAuth={handleSwitchAuth}
+                    isSubmitting={loading}
                 />
-            </View>
+            ) : (
+                <SignupForm
+                    onSubmit={handleAuthSubmit}
+                    onSwitchAuth={handleSwitchAuth}
+                    isSubmitting={loading}
+                />
+            )}
         </View>
     );
 }

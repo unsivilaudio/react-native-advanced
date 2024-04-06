@@ -7,16 +7,34 @@ import MapScreen from '@/screens/Map';
 import DeckScreen from '@/screens/Deck';
 import ReviewStack from '@/navigators/ReviewStack';
 import ScreenHeader from '@/components/ui/ScreenHeader';
+import { useAuthStore } from '@/store/hooks/use-auth';
 
 const Tabs = createBottomTabNavigator<MainTabParamsList>();
 
 export default function MainTab() {
+    const { logout } = useAuthStore();
+
     return (
         <Tabs.Navigator
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerTintColor: '#ecedef',
                 headerBackground: () => <ScreenHeader />,
+                headerStatusBarHeight: 40,
+                headerTitleStyle: { fontSize: 24 },
+                headerLeftContainerStyle: { paddingLeft: 15 },
+                headerRightContainerStyle: {
+                    paddingTop: 2,
+                    paddingRight: 15,
+                },
+                headerRight: ({ tintColor }) => (
+                    <Ionicons
+                        color={tintColor}
+                        size={24}
+                        name='exit-outline'
+                        onPress={() => logout()}
+                    />
+                ),
                 tabBarActiveTintColor: '#e9ecf0',
                 tabBarInactiveTintColor: '#222a54',
                 tabBarLabelStyle: {
@@ -33,6 +51,8 @@ export default function MainTab() {
             <Tabs.Screen
                 name='Map'
                 options={{
+                    title: 'Pick A Location',
+                    tabBarLabel: 'Map',
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons color={color} size={size} name='map' />
                     ),
@@ -42,6 +62,8 @@ export default function MainTab() {
             <Tabs.Screen
                 name='Deck'
                 options={{
+                    title: 'Listings',
+                    tabBarLabel: 'Listings',
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons color={color} size={size} name='list' />
                     ),
@@ -51,6 +73,7 @@ export default function MainTab() {
             <Tabs.Screen
                 name='Jobs'
                 options={{
+                    tabBarLabel: 'Favorites',
                     headerShown: false,
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons color={color} size={size} name='star' />
