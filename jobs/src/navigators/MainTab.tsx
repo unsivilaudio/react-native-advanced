@@ -8,10 +8,12 @@ import DeckScreen from '@/screens/Deck';
 import ReviewStack from '@/navigators/ReviewStack';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { useAuthStore } from '@/store/hooks/use-auth';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tabs = createBottomTabNavigator<MainTabParamsList>();
 
 export default function MainTab() {
+    const { top } = useSafeAreaInsets();
     const { logout } = useAuthStore();
 
     return (
@@ -20,7 +22,7 @@ export default function MainTab() {
                 headerTitleAlign: 'center',
                 headerTintColor: '#ecedef',
                 headerBackground: () => <ScreenHeader />,
-                headerStatusBarHeight: 40,
+                // headerStatusBarHeight: top,
                 headerTitleStyle: { fontSize: 24 },
                 headerLeftContainerStyle: { paddingLeft: 15 },
                 headerRightContainerStyle: {
@@ -74,7 +76,7 @@ export default function MainTab() {
                 name='Jobs'
                 options={{
                     tabBarLabel: 'Favorites',
-                    headerShown: false,
+                    headerShown: true,
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons color={color} size={size} name='star' />
                     ),
