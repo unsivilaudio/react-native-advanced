@@ -2,13 +2,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import type { RootStore } from '@/store';
-import type { AuthState } from '@/store/slices/auth/types';
-import { setUser, logout } from '@/store/slices/auth';
-import { signupUser, loginUser } from '@/store/slices/auth/thunks';
+import type { JobsState } from '@/store/slices/jobs/types';
 
-export function useAuthStore() {
+import {
+    fetchJobs,
+    addLikedJob,
+    removeLikedJob,
+} from '@/store/slices/jobs/thunks';
+
+export function useJobsStore() {
     const dispatch = useDispatch();
-    const store = useSelector<RootStore, AuthState>(store => store.auth);
+    const store = useSelector<RootStore, JobsState>(store => store.jobs);
 
     if (!store) {
         throw new Error(
@@ -17,7 +21,7 @@ export function useAuthStore() {
     }
 
     const actions = bindActionCreators(
-        { setUser, logout, signupUser, loginUser },
+        { fetchJobs, addLikedJob, removeLikedJob },
         dispatch
     );
 
