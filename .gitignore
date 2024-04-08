@@ -7,3 +7,5 @@ package-lock.json
 service_account.json
 sendgrid.json
 lib/
+!one-time-password/firebase.json
+firebase.json

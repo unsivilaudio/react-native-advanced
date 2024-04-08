@@ -30,7 +30,7 @@ export default function AppNavigation({ onAuthReady }: AppNavigationProps) {
 
     return (
         <NavigationContainer>
-            <View style={{ flex: 1, backgroundColor: '#ededed' }}>
+            <View style={{ flex: 1, backgroundColor: '#31313e' }}>
                 <RootTab />
             </View>
         </NavigationContainer>

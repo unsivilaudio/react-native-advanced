@@ -6,8 +6,10 @@ import type { JobsState } from '@/store/slices/jobs/types';
 
 import {
     fetchJobs,
+    fetchLikedJobs,
     addLikedJob,
     removeLikedJob,
+    resetLikedJobs,
 } from '@/store/slices/jobs/thunks';
 
 export function useJobsStore() {
@@ -21,7 +23,13 @@ export function useJobsStore() {
     }
 
     const actions = bindActionCreators(
-        { fetchJobs, addLikedJob, removeLikedJob },
+        {
+            fetchJobs,
+            fetchLikedJobs,
+            addLikedJob,
+            removeLikedJob,
+            resetLikedJobs,
+        },
         dispatch
     );
 

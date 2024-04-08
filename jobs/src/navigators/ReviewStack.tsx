@@ -15,7 +15,11 @@ type ReviewStackProps = BottomTabScreenProps<MainTabParamsList, 'Jobs'>;
 export default function ReviewStack({ navigation }: ReviewStackProps) {
     return (
         <Stack.Navigator
-            screenOptions={{ animation: 'fade', headerShown: false }}
+            screenOptions={{
+                animation: 'fade',
+                headerShown: false,
+                contentStyle: { backgroundColor: 'transparent' },
+            }}
         >
             <Stack.Screen
                 name='Review'

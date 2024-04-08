@@ -1,5 +1,9 @@
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
+
 import type { Job } from '@/providers/jooble';
+
+import { parseFormattedDate } from '@/util/date';
+import Card from '@/components/ui/Card';
 
 type ListItemProps = Job;
 
@@ -10,7 +14,7 @@ export default function ListItem({
     location,
     snippet,
 }: ListItemProps) {
-    const formattedDate = new Date(updated).toLocaleString();
+    const formattedDate = parseFormattedDate(new Date(updated));
     const formattedSnippet = snippet
         .split(/\s\s+/g)
         .map(entry => entry.trim())
@@ -18,7 +22,7 @@ export default function ListItem({
     // console.log(formattedSnippet);
 
     return (
-        <View style={styles.container}>
+        <Card style={styles.container}>
             <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>{title}</Text>
             </View>
@@ -30,7 +34,7 @@ export default function ListItem({
             <View style={styles.detailsContainer}>
                 <Text style={styles.descriptionText}>{formattedSnippet}</Text>
             </View>
-        </View>
+        </Card>
     );
 }
 
@@ -38,17 +42,6 @@ const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        borderColor: '#aaa',
-        backgroundColor: '#f1eeee',
-        borderRadius: 6,
-        padding: 18,
-        paddingBottom: 40,
-        elevation: 2,
-        shadowColor: 'black',
-        shadowOpacity: 0.7,
-        shadowOffset: { width: 2, height: 1 },
-        shadowRadius: 2,
         height: height * 0.5,
     },
     headerContainer: {

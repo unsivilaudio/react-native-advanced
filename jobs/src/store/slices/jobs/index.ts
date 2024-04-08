@@ -9,6 +9,7 @@ import {
     fetchJobs,
     fetchLikedJobs,
     removeLikedJob,
+    resetLikedJobs,
 } from '@/store/slices/jobs/thunks';
 
 const jobsSlice = createSlice<
@@ -76,6 +77,18 @@ const jobsSlice = createSlice<
             console.log(action.error.message);
             state.loading = false;
             state.error = action.error.message!;
+        });
+        // Reset liked jobs
+        builder.addCase(resetLikedJobs.pending, state => {
+            state.loading = true;
+        });
+        builder.addCase(resetLikedJobs.fulfilled, (state, action) => {
+            state.favorites = [];
+            state.loading = false;
+        });
+        builder.addCase(resetLikedJobs.rejected, (state, action) => {
+            console.log(action.error.message);
+            state.loading = false;
         });
     },
 });

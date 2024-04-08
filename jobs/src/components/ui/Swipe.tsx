@@ -7,6 +7,8 @@ import {
     PanResponder,
     LayoutAnimation,
     UIManager,
+    GestureResponderEvent,
+    PanResponderInstance,
 } from 'react-native';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -32,8 +34,10 @@ export default function Swipe<T extends DeckItem>({
 }: DeckProps<T>) {
     const [currentIdx, setCurrentIdx] = useState(0);
     const positionRef = useRef(new Animated.ValueXY());
-    const panRef = useRef(
-        PanResponder.create({
+    const panRef = useRef<PanResponderInstance>(createPanResponder());
+
+    function createPanResponder() {
+        return PanResponder.create({
             onStartShouldSetPanResponder: () => true,
             onPanResponderMove: (event, gesture) => {
                 positionRef.current.setValue({ x: gesture.dx, y: gesture.dy });
@@ -47,8 +51,13 @@ export default function Swipe<T extends DeckItem>({
                     resetPosition();
                 }
             },
-        })
-    );
+        });
+    }
+
+    useEffect(() => {
+        // CLOSURE ISSUES -- FIX
+        panRef.current = createPanResponder();
+    }, [currentIdx]);
 
     useEffect(() => {
         UIManager.setLayoutAnimationEnabledExperimental &&

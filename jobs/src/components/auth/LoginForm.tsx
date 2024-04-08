@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    TextInput,
-    Button,
-    Pressable,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+import Card from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
 
 type LoginFormProps = {
     onSwitchAuth(): void;
@@ -29,7 +25,7 @@ export default function LoginForm({
 
     return (
         <View style={styles.container}>
-            <View style={styles.form}>
+            <Card style={styles.form}>
                 <Text style={styles.header}>Welcome Back</Text>
                 <View style={styles.inputContainer}>
                     <View style={styles.icon}>
@@ -61,11 +57,11 @@ export default function LoginForm({
                 </View>
                 <View style={styles.actions}>
                     <View style={styles.buttonContainer}>
-                        <Button
-                            title={!isSubmitting ? 'Login' : 'Logging in...'}
-                            onPress={handleSubmit}
-                            disabled={isSubmitting}
-                        />
+                        <Button onPress={handleSubmit}>
+                            <Text style={styles.buttonText}>
+                                {isSubmitting ? 'Logging in...' : 'Login'}
+                            </Text>
+                        </Button>
                     </View>
                     <Pressable onPress={onSwitchAuth} disabled={isSubmitting}>
                         <Text style={styles.switchText}>
@@ -73,7 +69,7 @@ export default function LoginForm({
                         </Text>
                     </Pressable>
                 </View>
-            </View>
+            </Card>
         </View>
     );
 }
@@ -88,7 +84,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     form: {
+        flex: 0,
         width: '100%',
+        height: undefined,
         borderWidth: 2,
         borderColor: '#ccc',
         borderRadius: 8,
@@ -130,9 +128,15 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     buttonContainer: {
-        width: 200,
-        maxWidth: '80%',
+        width: '100%',
+        maxWidth: 200,
         marginBottom: 12,
+    },
+    buttonText: {
+        color: '#ecedef',
+        fontSize: 16,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
     switchText: {
         fontSize: 12,

@@ -22,6 +22,8 @@ import type {
     ThunkRemoveJobFavoriteReturn,
     ThunkFetchFavoriteJobsPayload,
     ThunkFetchFavoriteJobsReturn,
+    ThunkResetJobFavoritesPayload,
+    ThunkResetJobFavoritesReturn,
 } from '@/store/slices/jobs/types';
 
 import { db } from '@/providers/firebase';
@@ -90,24 +92,60 @@ export const removeLikedJob = createAsyncThunk<
 
 export const fetchLikedJobs = createAsyncThunk<
     ThunkFetchFavoriteJobsReturn,
-    ThunkAddJobFavoritePayload
+    ThunkFetchFavoriteJobsPayload
 >('jobs/fetchLiked', async payload => {
-    const userDocRef = doc(collection(db, 'users', payload.uid));
+    const userDocRef = doc(collection(db, 'users'), payload.uid);
     const userDoc = await getDoc(userDocRef);
     if (!userDoc.exists()) {
         throw new Error('Failed to retrieve user data.');
     }
     const userData = userDoc.data();
     let favorites: FirestoreJob[] = [];
-    if (userData.jobFavorites.length) {
+    if (userData.jobFavorites?.length) {
         const jobsRef = collection(db, 'jobs');
-        const docsQuery = query(jobsRef, where(documentId(), 'in', favorites));
+        const docsQuery = query(
+            jobsRef,
+            where(documentId(), 'in', userData.jobFavorites)
+        );
         await getDocs(docsQuery).then(
             snapshot =>
-                (favorites = snapshot.docs.map(doc =>
-                    doc.data()
-                ) as FirestoreJob[])
+                (favorites = snapshot.docs.map(doc => ({
+                    docId: doc.id,
+                    ...doc.data(),
+                })) as FirestoreJob[])
         );
     }
     return favorites;
+});
+
+export const resetLikedJobs = createAsyncThunk<
+    ThunkResetJobFavoritesReturn,
+    ThunkResetJobFavoritesPayload
+>('jobs/resetFavorites', async payload => {
+    const usersRef = collection(db, 'users');
+    const userRef = doc(usersRef, payload.uid);
+    const userDoc = await getDoc(userRef);
+    if (!userDoc.exists()) {
+        throw new Error('Failed to retrieve user details.');
+    }
+    const userData = userDoc.data();
+    if (userData.jobFavorites?.length) {
+        const jobsRef = collection(db, 'jobs');
+        const docsQuery = query(
+            jobsRef,
+            where(documentId(), 'in', userData.jobFavorites)
+        );
+        await getDocs(docsQuery).then(snapshot => {
+            const batchDelete = snapshot.docs.map(dataDoc => {
+                const fireDoc = doc(jobsRef, dataDoc.id);
+                return deleteDoc(fireDoc);
+            });
+            return Promise.allSettled(batchDelete);
+        });
+        await updateDoc(doc(usersRef, payload.uid), {
+            jobFavorites: [],
+        });
+    }
+
+    return { favorites: [] };
 });

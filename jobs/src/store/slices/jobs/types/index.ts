@@ -43,4 +43,13 @@ export type ThunkRemoveJobFavoriteReturn = {
 export type ThunkFetchFavoriteJobsPayload = {
     uid: string;
 };
+
 export type ThunkFetchFavoriteJobsReturn = FirestoreJob[];
+
+export type ThunkResetJobFavoritesPayload = {
+    uid: string;
+};
+
+export type ThunkResetJobFavoritesReturn = {
+    favorites: [];
+};

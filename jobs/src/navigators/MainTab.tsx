@@ -18,6 +18,9 @@ export default function MainTab() {
 
     return (
         <Tabs.Navigator
+            sceneContainerStyle={{
+                backgroundColor: 'transparent',
+            }}
             screenOptions={{
                 headerTitleAlign: 'center',
                 headerTintColor: '#ecedef',
@@ -38,7 +41,7 @@ export default function MainTab() {
                     />
                 ),
                 tabBarActiveTintColor: '#e9ecf0',
-                tabBarInactiveTintColor: '#222a54',
+                tabBarInactiveTintColor: '#1a318f',
                 tabBarLabelStyle: {
                     fontSize: 12,
                     marginTop: -10,
